@@ -23,6 +23,7 @@ func (b *Book) Validate() error {
 	default:
 		b.Title = strings.TrimSpace(b.Title)
 		b.Author = strings.TrimSpace(b.Author)
+		b.Status = "Available"
 		return nil
 	}
 }

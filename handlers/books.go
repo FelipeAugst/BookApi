@@ -1,130 +1,128 @@
 package handlers
 
+import (
+	"bookapi/models"
+	"bookapi/service"
+	"encoding/json"
+	"io"
+	"net/http"
+	"strconv"
+)
+
 func CreateBook(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		views.Error(w, http.StatusBadRequest, err)
+
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
 		return
 	}
 	var book models.Book
 
 	if err := json.Unmarshal(body, &book); err != nil {
 
-		
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		w.Write([]byte(err.Error()))
 		return
 
 	}
 
-	repo, err := repository.NewBook
-	Repository()
-	if err != nil {
-		views.Error(w, http.StatusInternalServerError, err)
+	bs := service.NewBookService()
+	if err := book.Validate(); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
 		return
 	}
-	if err := repo.Create(Book
-		); err != nil {
-		views.Error(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	views.ToJSON(w, http.StatusCreated, Book
-	)
+	bs.Create(book)
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(book)
 }
 
-func GetBook
-s(w http.ResponseWriter, r *http.Request) {
-	repo, err := repository.NewBook
-	Repository()
+func ListBooks(w http.ResponseWriter, r *http.Request) {
+	books, err := service.NewBookService().List(false, 0, 0)
+
 	if err != nil {
-		views.Error(w, http.StatusInternalServerError, err)
+
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
 		return
 	}
-	Book
-	s, err := repo.Get()
-	if err != nil {
-		views.Error(w, http.StatusInternalServerError, err)
-		return
-	}
-	views.ToJSON(w, http.StatusOK, Book
-		s)
+
+	json.NewEncoder(w).Encode(books)
 
 }
 
-func FindBook
-(w http.ResponseWriter, r *http.Request) {
+func DeleteBook(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseUint(r.PathValue("id"), 10, 64)
+
 	if err != nil {
-		views.Error(w, http.StatusBadRequest, err)
+
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
 		return
 	}
-	repo, err := repository.NewBook
-	Repository()
-	if err != nil {
-		views.Error(w, http.StatusInternalServerError, err)
-		return
-	}
-	Book
-	, err := repo.Find(id)
-	if err != nil {
-		views.Error(w, http.StatusInternalServerError, err)
-		return
-	}
-	views.ToJSON(w, http.StatusOK, Book
-	)
+
+	bs := service.NewBookService()
+	bs.Delete(uint(id))
+	w.WriteHeader(http.StatusNoContent)
+	w.Write([]byte("deleted"))
+
 }
 
-func UpdateBook
-(w http.ResponseWriter, r *http.Request) {
+func UpdateBook(w http.ResponseWriter, r *http.Request) {
+
 	id, err := strconv.ParseUint(r.PathValue("id"), 10, 64)
+
 	if err != nil {
-		views.Error(w, http.StatusBadRequest, err)
+
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
 		return
 	}
+
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		views.Error(w, http.StatusBadRequest, err)
-		return
-	}
-	var Book
-	 models.Book
 
-	if err := json.Unmarshal(body, &Book
-		); err != nil {
-		views.Error(w, http.StatusUnprocessableEntity, err)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
 		return
 	}
-	repo, err := repository.NewBook
-	Repository()
-	if err != nil {
-		views.Error(w, http.StatusInternalServerError, err)
-		return
-	}
-	Book
-	.ID = id
+	var book models.Book
 
-	if err := repo.Update(Book
-		); err != nil {
-		views.Error(w, http.StatusInternalServerError, err)
+	if err := json.Unmarshal(body, &book); err != nil {
+
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		w.Write([]byte(err.Error()))
 		return
+
 	}
-	views.ToJSON(w, http.StatusOK, Book
-	)
+	book.ID = id
+	service.NewBookService().Update(book)
 
 }
 
-func DeleteBook
-(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.ParseUint(r.PathValue("id"), 10, 64)
-	if err != nil {
-		views.Error(w, http.StatusBadRequest, err)
+func SearchBook(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	mode := query.Get("mode")
+	parameter := query.Get("parameter")
+	bs := service.NewBookService()
+
+	switch mode {
+	case "author":
+		results, _ := bs.ByAuthor(parameter, false, 0, 0)
+		json.NewEncoder(w).Encode(results)
+
+	case "title":
+		results, _ := bs.ByTitle(parameter, false, 0, 0)
+		json.NewEncoder(w).Encode(results)
 		return
+
+	case "":
+		ListBooks(w, r)
+		return
+	default:
+		w.WriteHeader(http.StatusBadRequest)
+
 	}
-	repo, err := repository.NewBook
-	Repository()
-	if err != nil {
-		views.Error(w, http.StatusInternalServerError, err)
-	}
-	if err := repo.Delete(id); err != nil {
-		views.Error(w, http.StatusInternalServerError, err)
-	}
-	views.ToJSON(w, http.StatusNoContent, nil)
+
+}

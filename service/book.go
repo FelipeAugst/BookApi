@@ -1,16 +1,16 @@
 package service
 
 import (
+	"bookapi/db"
 	"bookapi/models"
-	"bookapi/service/db"
 )
 
 type BookService interface {
 	Create(models.Book) error
-	List(bool, int, int) ([]models.Book, error)
+	List(bool, uint64, uint64) ([]models.Book, error)
 	Update(models.Book)
-	ByAuthor(string, bool, int, int) ([]models.Book, error)
-	ByTitle(string, bool, int, int) ([]models.Book, error)
+	ByAuthor(string, bool, uint64, uint64) ([]models.Book, error)
+	ByTitle(string, bool, uint64, uint64) ([]models.Book, error)
 	Delete(id uint)
 }
 
@@ -27,7 +27,7 @@ func (b *bookServiceImpl) Delete(id uint) {
 	b.Delete(id)
 }
 
-func (b *bookServiceImpl) List(pagination bool, idx, limit int) ([]models.Book, error) {
+func (b *bookServiceImpl) List(pagination bool, idx, limit uint64) ([]models.Book, error) {
 	search, err := b.dataBase.List(pagination, idx, limit)
 	if err != nil {
 		return nil, err
@@ -35,11 +35,11 @@ func (b *bookServiceImpl) List(pagination bool, idx, limit int) ([]models.Book, 
 	return search, nil
 }
 
-func (b *bookServiceImpl) ByAuthor(author string, pagination bool, idx, limit int) ([]models.Book, error) {
+func (b *bookServiceImpl) ByAuthor(author string, pagination bool, idx, limit uint64) ([]models.Book, error) {
 	return b.dataBase.SearchByAuthor(author, pagination, idx, limit)
 }
 
-func (b *bookServiceImpl) ByTitle(title string, pagination bool, idx, limit int) ([]models.Book, error) {
+func (b *bookServiceImpl) ByTitle(title string, pagination bool, idx, limit uint64) ([]models.Book, error) {
 	return b.dataBase.SearchByAuthor(title, pagination, idx, limit)
 }
 
