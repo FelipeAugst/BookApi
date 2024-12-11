@@ -11,10 +11,11 @@ type Db struct {
 	data      []models.Book
 }
 
-func (d *Db) Insert(book models.Book) {
+func (d *Db) Insert(book models.Book) uint64 {
 	book.ID = d.currentID
 	d.data = append(d.data, book)
 	d.currentID++
+	return book.ID
 }
 
 func (d *Db) List(pagination bool, page, limit uint64) ([]models.Book, error) {
