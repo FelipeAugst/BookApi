@@ -14,6 +14,6 @@ func ConfigRoutes(m *http.ServeMux) {
 	m.HandleFunc("GET /books/", ListBooks)
 	m.HandleFunc("GET /books/search", SearchBook)
 	m.HandleFunc("DELETE /books/{id}/delete", DeleteBook)
-	m.HandleFunc("UPDATE /books/{id}/update", UpdateBook)
+	m.HandleFunc("PUT /books/{id}/update", UpdateBook)
 
 }
