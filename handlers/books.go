@@ -97,6 +97,11 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 		return
 
 	}
+	if err := book.Validate(); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
 	book.ID = id
 	service.NewBookService().Update(book)
 
