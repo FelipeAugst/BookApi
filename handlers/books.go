@@ -63,7 +63,7 @@ func DeleteBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	bs := service.NewBookService()
-	bs.Delete(uint(id))
+	bs.Delete(id)
 	w.WriteHeader(http.StatusNoContent)
 	w.Write([]byte("deleted"))
 

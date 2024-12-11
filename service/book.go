@@ -11,20 +11,20 @@ type BookService interface {
 	Update(models.Book)
 	ByAuthor(string, bool, uint64, uint64) ([]models.Book, error)
 	ByTitle(string, bool, uint64, uint64) ([]models.Book, error)
-	Delete(id uint)
+	Delete(id uint64)
 }
 
 type bookServiceImpl struct {
-	dataBase  db.Db
-	currentId uint64
+	dataBase *db.Db
 }
 
 func (b *bookServiceImpl) Create(book models.Book) error {
-	return b.Create(book)
+	b.dataBase.Insert(book)
+	return nil
 }
 
-func (b *bookServiceImpl) Delete(id uint) {
-	b.Delete(id)
+func (b *bookServiceImpl) Delete(id uint64) {
+	b.dataBase.Delete(id)
 }
 
 func (b *bookServiceImpl) List(pagination bool, idx, limit uint64) ([]models.Book, error) {
@@ -49,7 +49,7 @@ func (b *bookServiceImpl) Update(book models.Book) {
 
 func NewBookService() BookService {
 	bs := new(bookServiceImpl)
-	bs.dataBase = db.DefaultDb
+	bs.dataBase = &db.DefaultDb
 
 	return bs
 }
