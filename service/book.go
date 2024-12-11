@@ -5,6 +5,10 @@ import (
 	"bookapi/models"
 )
 
+var (
+	DefaultDb = db.NewDb()
+)
+
 type BookService interface {
 	Create(models.Book) error
 	List(bool, uint64, uint64) ([]models.Book, error)
@@ -49,7 +53,7 @@ func (b *bookServiceImpl) Update(book models.Book) {
 
 func NewBookService() BookService {
 	bs := new(bookServiceImpl)
-	bs.dataBase = db.DefaultDb
+	bs.dataBase = DefaultDb
 
 	return bs
 }
