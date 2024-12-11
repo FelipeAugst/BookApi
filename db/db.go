@@ -96,6 +96,6 @@ func (d *Db) Delete(id uint64) {
 func NewDb() *Db {
 	d := new(Db)
 	d.currentID = 0
-	d.data = make([]models.Book, 10)
+	d.data = make([]models.Book, 0)
 	return d
 }
