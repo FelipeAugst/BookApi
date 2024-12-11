@@ -49,7 +49,7 @@ func (b *bookServiceImpl) Update(book models.Book) {
 
 func NewBookService() BookService {
 	bs := new(bookServiceImpl)
-	bs.dataBase = &db.DefaultDb
+	bs.dataBase = db.DefaultDb
 
 	return bs
 }

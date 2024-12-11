@@ -6,6 +6,10 @@ import (
 	"slices"
 )
 
+var (
+	DefaultDb = &Db{currentID: 0, data: make([]models.Book, 10)}
+)
+
 type Db struct {
 	currentID uint64
 	data      []models.Book
@@ -91,5 +95,3 @@ func (d *Db) Delete(id uint64) {
 	}
 
 }
-
-var DefaultDb = Db{currentID: 0, data: make([]models.Book, 10)}
