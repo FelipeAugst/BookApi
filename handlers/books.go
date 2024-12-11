@@ -33,7 +33,8 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 		return
 	}
-	bs.Create(book)
+	id, _ := bs.Create(book)
+	book.ID = id
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(book)
 }

@@ -10,7 +10,7 @@ var (
 )
 
 type BookService interface {
-	Create(models.Book) error
+	Create(models.Book) (uint64, error)
 	List(bool, uint64, uint64) ([]models.Book, error)
 	Update(models.Book)
 	ByAuthor(string, bool, uint64, uint64) ([]models.Book, error)
@@ -22,9 +22,9 @@ type bookServiceImpl struct {
 	dataBase *db.Db
 }
 
-func (b *bookServiceImpl) Create(book models.Book) error {
-	b.dataBase.Insert(book)
-	return nil
+func (b *bookServiceImpl) Create(book models.Book) (uint64, error) {
+	id := b.dataBase.Insert(book)
+	return id, nil
 }
 
 func (b *bookServiceImpl) Delete(id uint64) {
