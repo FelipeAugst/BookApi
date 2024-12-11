@@ -86,7 +86,7 @@ func (d *Db) Update(id uint64, book models.Book) {
 func (d *Db) Delete(id uint64) {
 	for idx, _ := range d.data {
 		if d.data[idx].ID == id {
-			d.data = slices.Delete[[]models.Book](d.data, idx, idx)
+			d.data = slices.DeleteFunc[[]models.Book](d.data, func(b models.Book) bool { return b.ID == id })
 			return
 		}
 	}
