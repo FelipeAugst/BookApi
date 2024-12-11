@@ -44,7 +44,7 @@ func (b *bookServiceImpl) ByAuthor(author string, pagination bool, idx, limit ui
 }
 
 func (b *bookServiceImpl) ByTitle(title string, pagination bool, idx, limit uint64) ([]models.Book, error) {
-	return b.dataBase.SearchByAuthor(title, pagination, idx, limit)
+	return b.dataBase.SearchByTitle(title, pagination, idx, limit)
 }
 
 func (b *bookServiceImpl) Update(book models.Book) {
